@@ -1,29 +1,23 @@
 module fuzzynum
 
-primitive type FuzzyNum <: AbstractFloat 64 end
+primitive type FuzzyFloat <: AbstractFloat 64 end
 
-FuzzyNum(x :: Float64) = reinterpret(FuzzyNum, x)
+FuzzyFloat(x :: Float64) = reinterpret(FuzzyFloat, x)
 
-Float64(x :: FuzzyNum) = reinterpret(Float64, x)
+Float64(x :: FuzzyFloat) = reinterpret(Float64, x)
 
-Base.show(io :: IO, x :: FuzzyNum) = print(io, Float64(x))
+Base.show(io :: IO, x :: FuzzyFloat) = print(io, Float64(x))
 
-import Base: +
+import Base: +, *, zero
 
-+ (a :: FuzzyNum, b :: FuzzyNum) = FuzzyNum(max(Float64(a), Float64(b)))
++ (a :: FuzzyFloat, b :: FuzzyFloat) = FuzzyFloat(max(Float64(a), Float64(b)))
 
-+ (a :: FuzzyNum, b :: Int64) = FuzzyNum(Float64(a) + b)
+*(a :: FuzzyFloat, b :: FuzzyFloat) = FuzzyFloat(min(Float64(a), Float64(b)))
 
-import Base: *
+zero(a :: FuzzyFloat) = reinterpret(FuzzyFloat, 0.0)
 
-*(a :: FuzzyNum, b :: FuzzyNum) = FuzzyNum(min(Float64(a), Float64(b)))
+zero(a :: Type{FuzzyFloat}) = reinterpret(FuzzyFloat, 0.0)
 
-import Base: zero
-
-zero(a :: FuzzyNum) = reinterpret(FuzzyNum, 0.0)
-
-zero(a :: Type{FuzzyNum}) = reinterpret(FuzzyNum, 0.0)
-
-export FuzzyNum, +, *, zero
+export FuzzyFloat, +, *, zero
 
 end
