@@ -23,9 +23,9 @@ See [`Ghehlien.ipynb`](https://github.com/chromezh/Ghehlien/blob/master/Ghehlien
 
 ## Basic Methodology
 
-* Binary relationship
+* Binary relation
 * Relation matrix
-* Transitive Closure
+* Transitive closure
 * Fuzzy clustering analysis
 
 ## Notes
