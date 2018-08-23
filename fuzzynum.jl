@@ -1,8 +1,18 @@
 module fuzzynum
 
-############ Fuzzy Numbers ############
+############ Fuzzy Bool and Fuzzy Float ############
 
 import Base: +, *, zero
+
+primitive type FuzzyBool <: Integer 8 end
+
+FuzzyBool(x :: Bool) = reinterpret(FuzzyBool, x)
+Bool(x :: FuzzyBool) = reinterpret(Bool, x)
+Base.show(io :: IO, x :: FuzzyBool) = print(io, Bool(x))
++(a :: FuzzyBool, b :: FuzzyBool) = FuzzyBool(Bool(a) || Bool(b))
+*(a :: FuzzyBool, b :: FuzzyBool) = FuzzyBool(Bool(a) && Bool(b))
+zero(a :: FuzzyBool) = reinterpret(FuzzyBool, false)
+zero(a :: Type{FuzzyBool}) = reinterpret(FuzzyBool, false)
 
 primitive type FuzzyFloat <: AbstractFloat 64 end
 
@@ -14,7 +24,7 @@ Base.show(io :: IO, x :: FuzzyFloat) = print(io, Float64(x))
 zero(a :: FuzzyFloat) = reinterpret(FuzzyFloat, 0.0)
 zero(a :: Type{FuzzyFloat}) = reinterpret(FuzzyFloat, 0.0)
 
-export FuzzyFloat, +, *, zero
+export FuzzyBool, FuzzyFloat, +, *, zero
 
 ############ Array Utilities ############
 
@@ -53,12 +63,12 @@ function getTransitiveClosure(FuzzyArr)
 end
 
 function getCluster(arr, n)
-    arr_new = map(x -> Float64(x), arr)
+    arr_new = map(x -> typeof(x) == FuzzyFloat ? Float64(x) : Bool(x), arr)
 
     ss = []
     for i in 1:n
         if all(xs -> !in(i, xs), ss)
-            s = map(x -> x[2], filter(x -> x[1] != zero(x[1]), zip(view(arr_new, :, i), collect(1:n))))
+            s = map(x -> x[2], Iterators.filter(x -> x[1] != zero(x[1]), zip(view(arr_new, :, i), collect(1:n))))
             if length(s) != 0
                 push!(ss, s)
             end
@@ -80,7 +90,7 @@ function ghehlien(xs)
         xsArr[i1, i2] = true
         xsArr[i2, i1] = true
     end
-    fuzzyArr = map(x -> FuzzyFloat(x ? 1.0 : 0.0), xsArr)
+    fuzzyArr = map(x -> FuzzyBool(x), xsArr)
     fuzzyTransitiveClosure = getTransitiveClosure(fuzzyArr)
     ss = getCluster(fuzzyTransitiveClosure, xsLen)
     for i in map(m -> join(map(n -> xsUniqueList[n], m)), ss)
