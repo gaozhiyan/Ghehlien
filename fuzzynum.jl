@@ -92,7 +92,7 @@ function ghehlien(xs)
     end
     fuzzyArr = map(x -> FuzzyBool(x), xsArr)
     fuzzyTransitiveClosure = getTransitiveClosure(fuzzyArr)
-    ss = getCluster(fuzzyTransitiveClosure, xsLen)
+    ss = getCluster(fuzzyTransitiveClosure, xsUniqueLen)
     for i in map(m -> join(map(n -> xsUniqueList[n], m)), ss)
         println(i)
     end
