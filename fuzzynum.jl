@@ -48,7 +48,23 @@ function getIndexInArr(xs, k)
     return -1
 end
 
-export setToList, getIndexInArr
+# https://stackoverflow.com/a/36518149
+function fastuniq(v)
+  v1 = Vector{eltype(v)}()
+  if length(v)>0
+    laste = v[1]
+    push!(v1,laste)
+    for e in v
+      if e != laste
+        laste = e
+        push!(v1,laste)
+      end
+    end
+  end
+  return v1
+end
+
+export setToList, getIndexInArr, fastuniq
 
 ############ Ghehlien (Plain Binary Relation) ############
 
