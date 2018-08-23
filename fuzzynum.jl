@@ -93,7 +93,7 @@ function getCluster(arr, n)
     ss
 end
 
-function ghehlien(xs)
+function ghehlienAsArray(xs)
     xsLen = length(xs)
     xsUniqueSet = Set(map(x -> x[1], xs))
     union!(xsUniqueSet, Set(map(x -> x[2], xs)))
@@ -109,11 +109,19 @@ function ghehlien(xs)
     fuzzyArr = map(x -> FuzzyBool(x), xsArr)
     fuzzyTransitiveClosure = getTransitiveClosure(fuzzyArr)
     ss = getCluster(fuzzyTransitiveClosure, xsUniqueLen)
+    res = []
     for i in map(m -> join(map(n -> xsUniqueList[n], m)), ss)
+        push!(res, i)
+    end
+    res
+end
+
+function ghehlien(xs)
+    for i in ghehlienAsArray(xs)
         println(i)
     end
 end
 
-export ghehlien
+export ghehlienAsArray, ghehlien
 
 end
